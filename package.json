@@ -10,8 +10,6 @@
   },
   "dependencies": {
     "@react-navigation/bottom-tabs": "^6.5.7",
-    "@tensorflow/tfjs": "^4.2.0",
-    "@tensorflow/tfjs-react-native": "^0.8.0",
     "expo": "~48.0.6",
     "expo-camera": "~13.2.1",
     "expo-status-bar": "~1.4.4",

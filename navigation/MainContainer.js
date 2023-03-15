@@ -6,10 +6,12 @@ import Ionicons from 'react-native-vector-icons/Ionicons'
 //Screens
 import HomeScreen from './screens/HomeScreen';
 import RecognizeScanner from './screens/RecognizeScanner';
+import ChatScreen from './screens/ChatScreen';
 
 //Screen Names
 const homeName = "Home"
 const recognizeScannerName = "Scanner Recognizer"
+const chatName = "Chatti";
 
 const Tab = createBottomTabNavigator();
 
@@ -25,6 +27,8 @@ const MainContainer = (props) => {
                             iconName = focused ? 'home' : 'home-outline'
                         } else if (rn === recognizeScannerName) {
                             iconName = focused ? 'camera' : 'camera-outline'
+                        }  else if (rn === chatName) {
+                            iconName = focused ? 'chatbubble' : 'chatbubble-outline'
                         } 
                         return <Ionicons name={iconName} size={size} color={color} />
                     },
@@ -46,6 +50,7 @@ const MainContainer = (props) => {
                 })}>
                     <Tab.Screen name={homeName} component={HomeScreen} />                    
                     <Tab.Screen name={recognizeScannerName} component={RecognizeScanner} />                    
+                    <Tab.Screen name={chatName} component={ChatScreen} />                    
         </Tab.Navigator>
     </NavigationContainer>
   )

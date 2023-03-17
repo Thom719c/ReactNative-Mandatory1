@@ -8,6 +8,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons'
 import HomeScreen from './screens/HomeScreen';
 import RecognizeScanner from './screens/RecognizeScanner';
 import ChatScreen from './screens/ChatScreen';
+import UsersScreen from './screens/UsersScreen';
 
 //Screen Names
 const homeName = "Home"
@@ -15,6 +16,24 @@ const recognizeScannerName = "Scanner Recognizer"
 const chatName = "Chatti";
 
 const Tab = createBottomTabNavigator();
+const Stack = createStackNavigator();
+
+const ChatStackScreen = () => {
+    return (
+        <Stack.Navigator>
+            <Stack.Screen
+                name={'Chat list'}
+                component={UsersScreen}
+                options={{ title: 'Chat list' }}
+            />
+            <Stack.Screen
+                name="Chat"
+                component={ChatScreen}
+                options={{ title: 'Chat' }}
+            />
+        </Stack.Navigator>
+    );
+};
 
 const MainContainer = (props) => {
     return (
@@ -51,7 +70,8 @@ const MainContainer = (props) => {
                 })}>
                 <Tab.Screen name={homeName} component={HomeScreen} />
                 <Tab.Screen name={recognizeScannerName} component={RecognizeScanner} />
-                <Tab.Screen name={chatName} component={ChatScreen} />
+                {/* <Tab.Screen name={chatName} component={ChatScreen} /> */}
+                <Tab.Screen name={chatName} component={ChatStackScreen} options={{ headerShown: false }} />
             </Tab.Navigator>
         </NavigationContainer>
     )

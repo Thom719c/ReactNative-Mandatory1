@@ -8,6 +8,7 @@ export default function Signup({ navigation }) {
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [name, setName] = useState('');
 
   const onHandleSignup = () => {
     if (email !== '' && password !== '') {
@@ -23,6 +24,15 @@ export default function Signup({ navigation }) {
       <View style={styles.whiteSheet} />
       <SafeAreaView style={styles.form}>
         <Text style={styles.title}>Sign Up</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Enter name"
+          autoCapitalize="none"
+          textContentType="text"
+          autoFocus={true}
+          value={name}
+          onChangeText={(text) => setName(text)}
+        />
         <TextInput
           style={styles.input}
           placeholder="Enter email"

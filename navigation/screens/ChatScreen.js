@@ -128,12 +128,13 @@ const ChatScreen = ({ route, navigation }) => {
         // Fetch existing chatroom or create a new one for the two users
         const fetchOrCreateChatroom = async () => {
             const users = [auth.currentUser.email, email];
-            const querySnapshot = await getDocs(
-                query(collection(db, 'chats'), where('users', '==', users))
-            );
-            if (querySnapshot.docs.length > 0) {
+            const querySnapshot = await getDocs(collection(db, 'chats'));
+            const chatrooms = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+            const chatroom = chatrooms.find((chat) => chat.users.includes(users[0]) && chat.users.includes(users[1]));
+
+            if (chatroom) {
                 // Use existing chatroom
-                const chatroomId = querySnapshot.docs[0].id;
+                const chatroomId = chatroom.id;
                 setChatroomId(chatroomId);
             } else {
                 // Create new chatroom
@@ -182,7 +183,7 @@ const ChatScreen = ({ route, navigation }) => {
         const { _id, createdAt, text, user } = messages[0];
 
         if (chatroomId) {
-            // Update existing chatroom document for the current user
+            // Update existing chatroom document for both users
             const chatroomRef = doc(db, 'chats', chatroomId);
             getDoc(chatroomRef)
                 .then((doc) => {
@@ -210,6 +211,29 @@ const ChatScreen = ({ route, navigation }) => {
                                             );
                                         } else {
                                             console.log(`User with email ${otherUserEmail} doesn't exist`);
+                                        }
+                                    })
+                                    .catch((error) => console.log('Error fetching user: ', error));
+
+                                // Add the message to the chatroom document for the current user
+                                const currentUserEmail = auth.currentUser.email;
+                                const currentUserRef = doc(db, 'users', currentUserEmail);
+                                getDoc(currentUserRef)
+                                    .then((doc) => {
+                                        if (doc.exists()) {
+                                            const chatrooms = doc.data().chatrooms;
+                                            const updatedChatrooms = chatrooms.map((chatroom) => {
+                                                if (chatroom.chatroomId === chatroomId) {
+                                                    return { ...chatroom, lastMessage: text };
+                                                } else {
+                                                    return chatroom;
+                                                }
+                                            });
+                                            updateDoc(currentUserRef, { chatrooms: updatedChatrooms }).catch((error) =>
+                                                console.log('Error updating chatrooms: ', error)
+                                            );
+                                        } else {
+                                            console.log(`User with email ${currentUserEmail} doesn't exist`);
                                         }
                                     })
                                     .catch((error) => console.log('Error fetching user: ', error));

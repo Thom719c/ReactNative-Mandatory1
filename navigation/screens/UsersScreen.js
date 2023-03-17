@@ -1,7 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useLayoutEffect } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View, FlatList } from 'react-native';
 import { collection, getDocs } from 'firebase/firestore';
 import { db, auth } from '../../components/firebase';
+import { signOut } from 'firebase/auth';
+import { AntDesign } from '@expo/vector-icons';
 
 const UsersScreen = ({ navigation }) => {
 
@@ -20,6 +22,20 @@ const UsersScreen = ({ navigation }) => {
         }
         getUsers();
     }, []);
+
+    const onSignOut = () => {
+        signOut(auth).catch((error) => console.log('Error logging out: ', error));
+    };
+
+    useLayoutEffect(() => {
+        navigation.setOptions({
+            headerRight: () => (
+                <TouchableOpacity style={{ marginRight: 10 }} onPress={onSignOut}>
+                    <AntDesign name="logout" size={24} color={'grey'} />
+                </TouchableOpacity>
+            ),
+        });
+    }, [navigation]);
 
     const renderItem = ({ item }) => {
         return (

@@ -9,11 +9,13 @@ import HomeScreen from './screens/HomeScreen';
 import RecognizeScanner from './screens/RecognizeScanner';
 import ChatScreen from './screens/ChatScreen';
 import UsersScreen from './screens/UsersScreen';
+import ProfileScreen from './screens/ProfileScreen';
 
 //Screen Names
 const homeName = "Home"
 const recognizeScannerName = "Scanner Recognizer"
 const chatName = "Chatti";
+const profileName = "Profile";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -24,7 +26,7 @@ const ChatStackScreen = () => {
             <Stack.Screen
                 name={'Chat list'}
                 component={UsersScreen}
-                options={{ title: 'Chat list' }}
+                options={{ title: 'Contacts list' }}
             />
             <Stack.Screen
                 name="Chat"
@@ -49,6 +51,8 @@ const MainContainer = (props) => {
                             iconName = focused ? 'camera' : 'camera-outline'
                         } else if (rn === chatName) {
                             iconName = focused ? 'chatbubble' : 'chatbubble-outline'
+                        } else if (rn === profileName) {
+                            iconName = focused ? 'person-circle' : 'person-circle-outline'
                         }
                         return <Ionicons name={iconName} size={size} color={color} />
                     },
@@ -72,6 +76,7 @@ const MainContainer = (props) => {
                 <Tab.Screen name={recognizeScannerName} component={RecognizeScanner} />
                 {/* <Tab.Screen name={chatName} component={ChatScreen} /> */}
                 <Tab.Screen name={chatName} component={ChatStackScreen} options={{ headerShown: false }} />
+                <Tab.Screen name={profileName} component={ProfileScreen} />
             </Tab.Navigator>
         </NavigationContainer>
     )

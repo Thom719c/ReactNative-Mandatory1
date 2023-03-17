@@ -94,19 +94,18 @@ export default ChatScreen;
 
 
 import React, { useState, useEffect, useLayoutEffect, useCallback } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View, Keyboard } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
-import { collection, addDoc, onSnapshot, query, orderBy, where, doc, setDoc, getDoc, updateDoc, arrayUnion, getDocs } from 'firebase/firestore';
+import { collection, addDoc, onSnapshot, doc, getDoc, updateDoc, getDocs } from 'firebase/firestore';
 import { db, auth } from '../../components/firebase';
 import { signOut } from 'firebase/auth';
-import { GiftedChat } from 'react-native-gifted-chat';
+import { GiftedChat, InputToolbar } from 'react-native-gifted-chat';
 
 const ChatScreen = ({ route, navigation }) => {
     const [messages, setMessages] = useState([]);
     const [chatroomId, setChatroomId] = useState(null);
 
     const { id, name, email } = route.params;
-    const otherUserId = id; // get the user ID of the other person in the chat
     const otherUserEmail = email; // get the email of the other person in the chat
 
     const onSignOut = () => {
@@ -221,7 +220,6 @@ const ChatScreen = ({ route, navigation }) => {
         }
     }, [chatroomId, email]);
 
-
     return (
         <GiftedChat
             key={id}
@@ -238,6 +236,12 @@ const ChatScreen = ({ route, navigation }) => {
         />
     );
 };
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+    },
+});
 
 export default ChatScreen;
 

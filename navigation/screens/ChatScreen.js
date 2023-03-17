@@ -183,62 +183,14 @@ const ChatScreen = ({ route, navigation }) => {
         const { _id, createdAt, text, user } = messages[0];
 
         if (chatroomId) {
-            // Update existing chatroom document for both users
+            // Update existing chatroom document
             const chatroomRef = doc(db, 'chats', chatroomId);
             getDoc(chatroomRef)
                 .then((doc) => {
                     if (doc.exists()) {
                         const messages = doc.data().messages;
-                        const updatedMessages = [...messages, { _id, createdAt, text, user }];
-                        updateDoc(chatroomRef, { messages: updatedMessages })
-                            .then(() => {
-                                // Add the message to the chatroom document for the other user
-                                const otherUserEmail = email === auth.currentUser.email ? otherUserEmail : email;
-                                const otherUserRef = doc(db, 'users', otherUserEmail);
-                                getDoc(otherUserRef)
-                                    .then((doc) => {
-                                        if (doc.exists()) {
-                                            const chatrooms = doc.data().chatrooms;
-                                            const updatedChatrooms = chatrooms.map((chatroom) => {
-                                                if (chatroom.chatroomId === chatroomId) {
-                                                    return { ...chatroom, lastMessage: text };
-                                                } else {
-                                                    return chatroom;
-                                                }
-                                            });
-                                            updateDoc(otherUserRef, { chatrooms: updatedChatrooms }).catch((error) =>
-                                                console.log('Error updating chatrooms: ', error)
-                                            );
-                                        } else {
-                                            console.log(`User with email ${otherUserEmail} doesn't exist`);
-                                        }
-                                    })
-                                    .catch((error) => console.log('Error fetching user: ', error));
-
-                                // Add the message to the chatroom document for the current user
-                                const currentUserEmail = auth.currentUser.email;
-                                const currentUserRef = doc(db, 'users', currentUserEmail);
-                                getDoc(currentUserRef)
-                                    .then((doc) => {
-                                        if (doc.exists()) {
-                                            const chatrooms = doc.data().chatrooms;
-                                            const updatedChatrooms = chatrooms.map((chatroom) => {
-                                                if (chatroom.chatroomId === chatroomId) {
-                                                    return { ...chatroom, lastMessage: text };
-                                                } else {
-                                                    return chatroom;
-                                                }
-                                            });
-                                            updateDoc(currentUserRef, { chatrooms: updatedChatrooms }).catch((error) =>
-                                                console.log('Error updating chatrooms: ', error)
-                                            );
-                                        } else {
-                                            console.log(`User with email ${currentUserEmail} doesn't exist`);
-                                        }
-                                    })
-                                    .catch((error) => console.log('Error fetching user: ', error));
-                            })
-                            .catch((error) => console.log('Error updating chatroom: ', error));
+                        updateDoc(chatroomRef, { messages: [...messages, { _id, createdAt, text, user }] })
+                            .catch(error => console.log('Error updating chatroom: ', error));
                     }
                 })
                 .catch((error) => console.log('Error fetching chatroom: ', error));
@@ -275,6 +227,13 @@ const ChatScreen = ({ route, navigation }) => {
             key={id}
             messages={messages}
             onSend={onSend}
+            messagesContainerStyle={{
+                backgroundColor: '#fff'
+            }}
+            textInputStyle={{
+                backgroundColor: '#fff',
+                borderRadius: 20,
+            }}
             user={{ _id: auth.currentUser.email }}
         />
     );

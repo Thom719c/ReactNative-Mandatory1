@@ -182,7 +182,7 @@ const ChatScreen = ({ route, navigation }) => {
         const { _id, createdAt, text, user } = messages[0];
 
         if (chatroomId) {
-            // Update existing chatroom document
+            // Update existing chatroom document for the current user
             const chatroomRef = doc(db, 'chats', chatroomId);
             getDoc(chatroomRef)
                 .then((doc) => {
@@ -223,28 +223,25 @@ const ChatScreen = ({ route, navigation }) => {
             const chatsRef = collection(db, 'chats');
             const chatroom = {
                 messages: [{ _id, createdAt, text, user }],
-                users: [auth.currentUser.email, email], // add users array
+                users: [auth.currentUser.email, email],
             };
             addDoc(chatsRef, chatroom).then((docRef) => {
                 const newChatroomId = docRef.id;
 
                 // Update the logged-in user's chatroom document
                 const userRef = doc(db, 'users', auth.currentUser.email);
-                updateDoc(userRef, { 'chatrooms.chatroomId': newChatroomId })
-                    .then(() => {
-                        console.log(`Logged-in user's chatroom document updated with new chatroom ID: ${newChatroomId}`);
+                getDoc(userRef)
+                    .then((doc) => {
+                        if (doc.exists()) {
+                            const chatrooms = doc.data().chatrooms;
+                            const updatedChatrooms = [...chatrooms, { chatroomId: newChatroomId, otherUserEmail, lastMessage: text }];
+                            updateDoc(userRef, { chatrooms: updatedChatrooms }).catch((error) => console.log('Error updating chatrooms: ', error));
+                        } else {
+                            console.log(`User with email ${auth.currentUser.email} doesn't exist`);
+                        }
                     })
-                    .catch((error) => console.log('Error updating user chatroom document: ', error));
-
-                // Update the other user's chatroom document
-                const otherUserRef = doc(db, 'users', email);
-                updateDoc(otherUserRef, { 'chatrooms.chatroomId': newChatroomId })
-                    .then(() => {
-                        console.log(`Other user's chatroom document updated with new chatroom ID: ${newChatroomId}`);
-                    })
-                    .catch((error) => console.log('Error updating other user chatroom document: ', error));
-            })
-                .catch((error) => console.log('Error creating chatroom: ', error));
+                    .catch((error) => console.log('Error fetching user: ', error));
+            });
         }
     }, [chatroomId, email]);
 

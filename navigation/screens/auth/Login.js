@@ -8,13 +8,21 @@ export default function Login({ navigation }) {
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [error, setError] = useState(null);
 
     const onHandleLogin = () => {
-        if (email !== "" && password !== "") {
-            signInWithEmailAndPassword(auth, email, password)
-                .then(() => console.log("Login success"))
-                .catch((err) => Alert.alert("Login error", err.message));
-        }
+        signInWithEmailAndPassword(auth, email, password)
+            .then(() => console.log("Login success"))
+            .catch((error) => {
+                if (error.code === 'auth/invalid-email' ||
+                    error.code === 'auth/wrong-password' ||
+                    error.code === 'auth/email-already-in-use') {
+                    setError('Your email or password was incorrect');
+                    setTimeout(() => { setError(''); }, 2000);
+                } else {
+                    console.log('There was a problem with your request', error.message);
+                }
+            });
     };
 
     return (
@@ -43,6 +51,7 @@ export default function Login({ navigation }) {
                     value={password}
                     onChangeText={(text) => setPassword(text)}
                 />
+                {error && <Text style={styles.error}>{error}</Text>}
                 <TouchableOpacity style={styles.button} onPress={onHandleLogin}>
                     <Text style={{ fontWeight: 'bold', color: '#fff', fontSize: 18 }}> Log In</Text>
                 </TouchableOpacity>
@@ -105,4 +114,8 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginTop: 40,
     },
+    error: {
+        marginBottom: 20,
+        color: 'red',
+    }
 });

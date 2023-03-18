@@ -2,20 +2,24 @@ import React, { useState } from 'react';
 import { StyleSheet, Text, View, Button, TextInput, Image, SafeAreaView, TouchableOpacity, StatusBar, Alert } from "react-native";
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { db, auth } from '../../../components/firebase';
-import { collection, addDoc, doc, getDoc, updateDoc } from 'firebase/firestore';
+import { collection, addDoc } from 'firebase/firestore';
 
 export default function Signup({ navigation }) {
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
+  const [error, setError] = useState(null);
 
   const onHandleSignup = () => {
-    if (email !== '' && password !== '') {
+    if (email !== '' && password !== '' && name !== '') {
       createUserWithEmailAndPassword(auth, email, password)
         .then(() => console.log('Signup success'))
         .catch((err) => Alert.alert("Login error", err.message));
       addToUserCollection();
+    } else {
+      setError('You missing to fill out name, email or password');
+      setTimeout(() => { setError(''); }, 2000);
     }
   };
 
@@ -68,6 +72,7 @@ export default function Signup({ navigation }) {
           value={password}
           onChangeText={(text) => setPassword(text)}
         />
+        {error && <Text style={styles.error}>{error}</Text>}
         <TouchableOpacity style={styles.button} onPress={onHandleSignup}>
           <Text style={{ fontWeight: 'bold', color: '#fff', fontSize: 18 }}> Sign Up</Text>
         </TouchableOpacity>
@@ -130,4 +135,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 40,
   },
+  error: {
+    marginBottom: 20,
+    color: 'red',
+  }
 });

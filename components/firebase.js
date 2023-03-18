@@ -40,7 +40,7 @@ export const auth = getAuth();
 /**
  * Export Firebase storage. → ex. import { storage } from '../path/firebaseDb';
  */
-// export const storage = getStorage(firebaseApp);
+export const storage = getStorage(firebaseApp);
 
 /**
  * Default export Configeration. → ex. import firebase from '../path/firebaseDb';

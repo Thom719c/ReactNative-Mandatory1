@@ -4,9 +4,9 @@ import { AntDesign } from '@expo/vector-icons';
 import { collection, addDoc, onSnapshot, doc, getDoc, updateDoc, getDocs } from 'firebase/firestore';
 import { db, auth, storage } from '../../components/firebase';
 import { signOut } from 'firebase/auth';
-import { GiftedChat, InputToolbar, Send } from 'react-native-gifted-chat';
+import { GiftedChat, Send } from 'react-native-gifted-chat';
 import * as ImagePicker from 'expo-image-picker';
-import { getStorage, ref, getDownloadURL, uploadBytes } from "firebase/storage";
+import { ref, getDownloadURL, uploadBytes } from "firebase/storage";
 import uuid from 'react-native-uuid';
 
 const ChatScreen = ({ route, navigation }) => {
@@ -86,6 +86,7 @@ const ChatScreen = ({ route, navigation }) => {
         };
     }, [chatroomId]);
 
+    /* onSend when send button is clicked */
     const onSend = useCallback((messages = []) => {
         setMessages(previousMessages => GiftedChat.append(previousMessages, messages));
 
@@ -113,7 +114,6 @@ const ChatScreen = ({ route, navigation }) => {
             };
             addDoc(chatsRef, chatroom).then((docRef) => {
                 const newChatroomId = docRef.id;
-
                 // Update the logged-in user's chatroom document
                 const userRef = doc(db, 'users', auth.currentUser.email);
                 getDoc(userRef)
@@ -131,6 +131,7 @@ const ChatScreen = ({ route, navigation }) => {
         }
     }, [chatroomId, email, imageUrl]);
 
+    /* Images */
     const handleChoosePhotoFromLib = async () => {
         let response = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -161,7 +162,6 @@ const ChatScreen = ({ route, navigation }) => {
             allowsEditing: true,
             quality: 0.5,
         });
-        console.log(result);
         if (result.didCancel && result.didCancel == true) {
         } else {
             uploadImage(result.assets[0].uri);
@@ -178,7 +178,6 @@ const ChatScreen = ({ route, navigation }) => {
         await uploadBytes(reference, blobFile);
 
         const url = await getDownloadURL(reference);
-        console.log(url)
         setImageUrl(url);
     };
 
